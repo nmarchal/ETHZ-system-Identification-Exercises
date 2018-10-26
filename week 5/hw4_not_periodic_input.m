@@ -12,7 +12,7 @@ N=1024 ;
 m = 4 ;
 time = [0:1:N-1] ;
 e = randn(N,1) ;
-u = 1 + 2*randn(N,1) ;
+u = 2*randn(N,1) ;
 
 ye = lsim(H,e,time) ;
 yu = lsim(G,u,time) ;
@@ -164,7 +164,7 @@ for i = 1:size(gama,2)
         end
         crosscorrelation_u(j) = crosscorrelation ;
     end
-    numerator = fft( WHann .* crosscorrelation_u') ; 
+    numerator = fft( WHann .* crosscorrelation_u') ;   
     
     %compute smooth transfer function
     G_smooth_time = numerator/denominator ;
@@ -176,3 +176,6 @@ for i = 1:size(gama,2)
     legend(int2str(gama(i)),'real')
     title('time domain window')
 end 
+
+%Results : different from the prof but it seems like me correlations are
+%correct. The difference could come from different input signals.

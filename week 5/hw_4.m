@@ -10,7 +10,7 @@ N=1024 ;
 m = 4 ;
 time = [0:1:N-1] ;
 e = randn(N,1) ;
-uperiod = 1+ 2*randn(N/4,1) ;
+uperiod = 10*randn(N/4,1) ;
 u = [uperiod ; uperiod ; uperiod ; uperiod] ;
 
 ye = lsim(H,e,time) ;
@@ -150,7 +150,7 @@ for i = 1:size(gama,2)
         autocorrelation_u(j) = autocorrelation ;
     end
     denominator = fft( WHann .* autocorrelation_u) ;
-
+    
     j = 0 ; %reset coutner
     for tao = -(N/2 -1):(N/2)
         j = j+1 ;
