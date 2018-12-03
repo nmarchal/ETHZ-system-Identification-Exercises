@@ -1,0 +1,72 @@
+clc
+clear all
+close all
+
+N = 10^3;
+e_u = randn(N,1) ;
+u = zeros(N,1) ;
+
+%transfer functions
+A = [1 -1.5 0.7] ;
+B = [0 1 0.5] ;
+C = [1 -1 0.2] ;
+
+
+theta = parameters_ls(A,B,C,N)
+%% compare ruth and estimation 
+
+%transfer functions ESTIMATED
+A_est = [1 theta(1) theta(2)] ;
+B_est = [0 theta(3) theta(4)] ;
+
+BA_est = tf(B_est,A_est,-1,'Variable','z^-1') ;
+CA_est = tf(C,A_est,-1,'Variable','z^-1') ;
+
+% Create the y output
+y_est = lsim(BA_est,u) + lsim(CA_est,e_u);
+
+figure(1)
+plot(y) ; hold on ; 
+plot(y_est)
+legend('true', 'estimation')
+
+%%
+function [theta] = parameters_ls(A,B,C,N, e)
+%UNTITLED2 Summary of this function goes here
+%   Detailed explanation goes here
+
+BA = tf(B,A,-1,'Variable','z^-1') ;
+CA = tf(C,A,-1,'Variable','z^-1') ;
+C_inv = tf(1,C,-1,'Variable','z^-1') ;
+L = tf([0 1 0.2],[1 -0.1 -0.12], -1,'Variable','z^-1') ;
+
+% construc the u signal
+for i = 1:N
+    if i == 1
+        u(i) = 0 ;
+    elseif i == 2
+        u(i) = e_u(i-1) ;
+    else
+        u(i) = 0.1*u(i-1) + 0.12*u(i-2) + e_u(i-1) + 0.2*e_u(i-2) ;
+    end
+end
+
+% Create the y output
+y = lsim(BA,u) + lsim(CA,e_u);
+
+% LS model
+y_F = lsim(C_inv,y) ;
+u_F = lsim(C_inv,u) ;
+
+for k = 1:N
+    if k == 1
+        PHI(k,:) = [0 0 0 0] ;
+    elseif k == 2
+        PHI(k,:) = [-y_F(k-1) 0 u_F(k-1) 0] ;
+    else
+        PHI(k,:) = [-y_F(k-1) -y_F(k-2) u_F(k-1) u_F(k-2)] ;
+    end
+end
+
+theta = PHI\y_F ;
+end

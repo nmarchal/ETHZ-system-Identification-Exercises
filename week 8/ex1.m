@@ -10,7 +10,7 @@ wp = 3.5 ;
 Ts = 0.02 ;
 
 % construct the plant 
-G1 = tf([1 2*zetaz*wz wz^2],[1 2*zetap*wp wp^2]) ;
+G1 = tf([1 2*zetaz*wz wz^2],[1 2*zetap*wp wp^2]) 
 G2 = tf([5000],[1 250 200*50]) ;
 Gs = G1*G2 ;
 Gdz = c2d(Gs,Ts,'zoh') ; % discrete time
